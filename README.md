@@ -7,7 +7,7 @@ Steps:
 
 1. pip install -r requirements.txt
 2. mkdir -p ./dags ./logs ./plugins
-3. echo -e "AIRFLOW_UID=$(id -u)" > .env
+3. echo -e "AIRFLOW_UID=$(id -u)" > .env (only on linux)
 4. docker-compose up airflow-init
 5. docker-compose up -d
 6. wait till containers are up and running
