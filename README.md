@@ -29,10 +29,13 @@ For Windows:
 3. Go to 'Systemumgebungsvariablen bearbeiten - Umgebungsvariablen' and set a new system variable JAVA_HOME, e.g C:\Program Files\Java\jre1.8.0_341
 
 On linux:
+
 sudo apt-get update
+
 sudo apt-get install openjdk-8-jdk
 
 On mac:
+
 brew cask install java
 
 To test the connection to the running spark master, execute connect.py.
