@@ -31,10 +31,10 @@ print(df_pd.head())
 sparkDF = spark.createDataFrame(df_pd)
 sparkDF.show()
 
-df = spark.read.format("csv") \
-    .option('header', True) \
-    .option('multiLine', True) \
-    .load(path)
+#df = spark.read.format("csv") \
+#    .option('header', True) \
+#    .option('multiLine', True) \
+#    .load(path)
 # .load(path)
 
 # df.show()
