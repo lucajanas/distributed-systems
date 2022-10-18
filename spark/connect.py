@@ -19,14 +19,30 @@ spark = SparkSession \
 
 print('Submitted application!')
 
+import pandas as pd
 
 # path = "C:\\Users\\Luca\\PycharmProjects\\distributed-systems\\load_simulation_data\\ts_data_1.csv"
 path = r"/Users/kevin/Desktop/distributed-systems_copy/load_simulation_data/ts_data_1.csv"
 
-# Read csv as spark.sql.dataframe.DataFrame format directly using Spar
-df = spark.read.csv(path,
-                    header=True,
-                    inferSchema=True) # detects the correct format else every column is declined as string
+df_pd = pd.read_csv(path)
+
+print("Read csv via pandas")
+
+print(df_pd.head())
+
+sparkDF = spark.createDataFrame(df_pd)
+print("Converted pandas DataFrame to spark DataFrame")
+sparkDF.show()
+
+
+# Read csv as spark.sql.dataframe.DataFrame format directly using Spark
+df = spark.read.format("csv") \
+    .option('header', True) \
+    .option('multiLine', True) \
+    .option('inferSchema', True) \
+    .load(path)
+
+    # option('inferSchema', True): detects the correct format else every column is declined as string
 
 print("Read csv directly via spark")
 
