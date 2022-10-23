@@ -11,6 +11,7 @@ os.environ["PYSPARK_PYTHON"] = sys.executable
 def connect():
     conf = pyspark.SparkConf().setMaster('spark://localhost:7077')
     spark = SparkSession \
+        .builder.config(conf=conf) \
         .builder \
         .appName("Python") \
         .getOrCreate()
