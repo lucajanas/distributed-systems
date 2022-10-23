@@ -29,10 +29,9 @@ def extract_data(path, sparkSession, number_of_files=6):
 
     df = sparkSession.createDataFrame(data=emp_RDD, schema=columns)
 
-
     for i in range(1, number_of_files + 1):
 
-        path_data = path + fr"/ts_data_block_{i}.csv"  # Datafile name
+        path_data = path + fr"/ts_data_block_{i}.csv"  # Change Datafile name if necessary
 
         df_temp = sparkSession.read.format("csv") \
             .option('header', True) \
