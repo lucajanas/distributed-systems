@@ -47,7 +47,7 @@ You can check if your application has been submitted via your browser on localho
 
 1. What are the central components in your system? Describe the architecture of the constructed information system, name the central software components in your solution, and describe their purpose.
 
-Our system consists of one containerized spark master and two containerized spark workers, controlled by docker-compose running on a single machine. You can submit spark applications to this cluster / the spark master using pyspark from your local machine. The spark master distributes the requests to a worker with enough available resources to handle the request from the client (your local machine). The tasks assigned to a spark worker are then handled / processed by an executor within the spark worker.
+Our system consists of one containerized spark master and two containerized spark workers, controlled by docker-compose running on a single machine. You can submit spark applications to this cluster / the spark master by creating a SparkContext using pyspark from your local machine. The spark master distributes the requests to a worker with enough available resources to handle the request from the client (your local machine). The tasks assigned to a spark worker are then handled / processed by an executor within the spark worker.
 
 ![image](https://user-images.githubusercontent.com/58073358/197608242-660a6ee2-cc12-442d-b6d3-68aa0a5e4964.png)
 
