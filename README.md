@@ -55,9 +55,34 @@ Source: https://spark.apache.org/docs/latest/cluster-overview.html
 
 2. What is the analytical problem that you want to solve? Present an adequate formal definition of your problem and describe the process how you solve it using the prototypical implementation in your data pipeline.
 
+We want to apply a classification problem to several labeled time series and make predictions based on them. For this purpose, we have generated a number of time series datasets. We have simulated the daily resting heart rate measurements, respectively the resting pulse, in beats per minute (bpm) of fictitious subjects from January 2021 to March 2021. To ensure that these values are comparable throughout the day, we emphasize that pulse measurements are always taken at the time after waking up from sleep overnight. For each subject, these are 90 observations with equidistant intervals with no missing values. In particular, we distinguish subjects with different fitness levels. Studies have shown that significantly lower resting pulses are measured in athletes and people who do endurance training or yoga, for example (https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6306777/).
+Therefore, for the label of the time series, we consider the three categories of subjects: 
+- 'pro_athletes' as professional athletes
+- 'athletes' as regular hobby athletes
+- 'non_athletes' as non-athletes who do little to no exercise. 
+
+The observations are simulated by normally distributed random draws. Here, the means and standard deviations also depend on a normally distributed random draw.
+On average, it is simulated that the group of 'pro_athletes' has a resting pulse of 50, the group of 'athletes' has one of 65 and the 'non_athletes' has one of 80. The exact data simulation is implemented in the python file 'load_simulation_data.py'.
+
+For our big data use case, we have a total of 13,500,000 records consisting of 150,000 labeled subjects (divided into 6 csv files).
+
+The formal definition of our problem is how can we build an accurate classifier based on derived features from the time series to predict the categories of different fitness levels.
+
 3. How does your analytical approach work and what changed compared to a non distributed version of the algorithm? Describe the algorithm that you chose to derive a solution with a focus on the tradeoffs that have been made in the distributed environment.
 
 4. How can your solution be evaluated? Discuss how the quality of your analytical solution can be evaluated and present some evaluation statistics as results. The actual quality of your forecasts or classification is not of interest, but the process on how to derive evaluation statistics and how one would benchmark multiple models.
+
+Since we have chosen a multinomial logistic regression model with nominally scaled outcome variables as our analytic approach, we can consider a confusion matrix to measure correctly classified and misclassified predictions. From this confusion matrix, we can apply various statistical measures to evaluate our model based on the training data on the test data.
+
+- Accuracy: The accuracy measure is defined as the percentage of correctly classified data of all prediction outcomes in the test data.
+
+But the accuracy measure is not a good measure for unbalanced classification. Therefore, it is often necessary to consider other metrics.
+
+- Precision: Precision is a metric that shows how many of the positive predictions made are correct.
+
+- Recall: Recall is a metric that shows how many of the positive cases the classifier has correctly predicted, over all the positive cases in the data.
+
+- F1-Score: A good classifier is a good trade of of both precision and recall to be close to the value 1. Therefore, the F1-score metric is needed to combine both precision and recall.
 
 5. What are the limitations of your solution? Kleppmann (2017) mentions reliability, scalability, and maintainability as key success factors for distributed data intensive systems. How are those goals achieved in your system? What are the most relevant topics (e.g. sections or subsections from Kleppmanns book) when scaling your prototypical system?
 
