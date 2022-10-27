@@ -6,13 +6,12 @@ from pyspark.sql import SparkSession
 from pyspark.sql.types import *
 
 warnings.filterwarnings('ignore')
-os.environ["PYSPARK_PYTHON"] = sys.executable
+#os.environ["PYSPARK_PYTHON"] = sys.executable
 
 def connect():
     conf = pyspark.SparkConf().setMaster('spark://localhost:7077')
     spark = SparkSession \
         .builder.config(conf=conf) \
-        .builder \
         .appName("Python") \
         .getOrCreate()
 
@@ -32,7 +31,7 @@ def extract_data(path, sparkSession, number_of_files=6):
 
     for i in range(1, number_of_files + 1):
 
-        path_data = path + fr"/ts_data_block_{i}.csv"  # Change Datafile name if necessary
+        path_data = path + fr"/ts_data_{i}.csv"  # Change Datafile name if necessary
 
         df_temp = sparkSession.read.format("csv") \
             .option('header', True) \

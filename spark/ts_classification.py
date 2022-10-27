@@ -4,6 +4,9 @@ import pyspark.sql.functions as F
 from pyspark.ml.feature import VectorAssembler, StringIndexer
 from pyspark.ml.classification import LogisticRegression
 from pyspark.ml.evaluation import MulticlassClassificationEvaluator
+from pyspark.mllib.evaluation import MulticlassMetrics
+
+
 
 start_all = time.time()
 
@@ -17,7 +20,7 @@ print("Read csv directly via spark and union all datafiles into one PySpark Data
 start_0 = time.time()
 df = extract_data(path=r"/Users/kevin/Desktop/Data Time Series Cross sectional",
                   sparkSession=spark,
-                  number_of_files=6)
+                  number_of_files=2)
 end_0 = time.time()
 # Show Dataframe
 df.show()
@@ -121,12 +124,18 @@ print("")
 
 # Model Evaluation
 print("Model evaluation measures:")
+print("")
 start_7 = time.time()
+
+print("Show Confusion Matrix:")
+metrics = MulticlassMetrics(df_target_vs_prediction.rdd.map(tuple))
+print(metrics.confusionMatrix().toArray())
+print("")
 multi_evaluator_acc = MulticlassClassificationEvaluator(labelCol='Target', metricName='accuracy')
 print(f'Prediction Accuracy: {multi_evaluator_acc.evaluate(y_pred)}')
-multi_evaluator_prec = MulticlassClassificationEvaluator(labelCol='Target', metricName='weightedPrecision')
+multi_evaluator_prec = MulticlassClassificationEvaluator(labelCol='Target', metricName='precisionByLabel')
 print(f'Prediction Precision: {multi_evaluator_prec.evaluate(y_pred)}')
-multi_evaluator_rec = MulticlassClassificationEvaluator(labelCol='Target', metricName='weightedRecall')
+multi_evaluator_rec = MulticlassClassificationEvaluator(labelCol='Target', metricName='recallByLabel')
 print(f'Prediction Recall: {multi_evaluator_rec.evaluate(y_pred)}')
 multi_evaluator_f1 = MulticlassClassificationEvaluator(labelCol='Target', metricName='f1')
 print(f'Prediction F1-Score: {multi_evaluator_f1.evaluate(y_pred)}')
