@@ -1,47 +1,29 @@
 Requirements:
 - docker: https://docs.docker.com/desktop/install/windows-install/
-- docker-compose: https://docs.docker.com/desktop/install/windows-install/
 
 
 Steps:
 
-1. pip install -r requirements.txt
-2. mkdir -p ./dags ./logs ./plugins
-3. echo -e "AIRFLOW_UID=$(id -u)" > .env (only on linux)
-4. docker-compose up airflow-init
-5. docker-compose up -d
-6. wait till containers are up and running
+On Linux and Mac:
 
-UIs:
-- Airflow:
-   - url:      localhost:8080
-   - user:     airflow
-   - password: airflow
-- Spark:
-   - url:      localhost:9000
+1. cd distributed-systems/build
+2. docker built . -t spark (this may take a while)
+3. cd distributed-systems
+4. source run.sh
 
-To be able to use Spark, you need to have Java installed on your machine.
+On Windows:
 
-For Windows:
+1. cd distributed-systems/build
+2. docker built . -t spark (this may take a while)
+3. cd distributed-systems
+4. docker network create --subnet=172.18.0.0/16 spark-network (only once)
+5. docker run -v $PWD/load_simulation_data://data:rw --net spark-network --ip 172.18.0.22 --rm --name spark -d -p 8080:8080 -p 7077:7077 -p 8081:8081 -p 8888:8888 spark
 
-1. Download Java from https://www.java.com/en/download/
-2. Install Java
-3. Go to 'Systemumgebungsvariablen bearbeiten - Umgebungsvariablen' and set a new system variable JAVA_HOME, e.g C:\Program Files\Java\jre1.8.0_341
+Go to localhost:8888 in your browser to access JupyterLab and work with pyspark. See load_simulation_data/load_example.ipynb for an example on how to connect to the spark instance.
 
-On linux:
+To stop the container, run
 
-sudo apt-get update
-
-sudo apt-get install openjdk-8-jdk
-
-On mac:
-
-brew cask install java
-
-To test the connection to the running spark master, execute connect.py.
-
-You can check if your application has been submitted via your browser on localhost:9000.
-
+    docker stop spark
 
 # Guiding questions
 
