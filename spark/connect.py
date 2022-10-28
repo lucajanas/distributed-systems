@@ -1,51 +1,46 @@
 import warnings
-
 warnings.filterwarnings('ignore')
 
 import pyspark
 from pyspark.sql import SparkSession
+from pyspark.sql.types import *
 
-#import os
-#print(os.getcwd())
+warnings.filterwarnings('ignore')
 
-conf = pyspark.SparkConf().setMaster('spark://172.18.0.22:7077')
-#conf = pyspark.SparkConf().setMaster('spark://localhost:7077')
+def connect():
+    conf = pyspark.SparkConf().setMaster('spark://localhost:7077')
+    spark = SparkSession \
+        .builder.config(conf=conf) \
+        .appName("Python") \
+        .getOrCreate()
 
-spark = SparkSession \
-    .builder.config(conf=conf) \
-    .appName("Python") \
-    .getOrCreate()
+    print('Submitted application!')
+    return spark
 
-#print(spark.sparkContext.getConf().getAll())
 
-print('Submitted application!')
+def extract_data(path, sparkSession, number_of_files=6):
 
-import pandas as pd
+    # Creates Empty RDD
+    emp_RDD = sparkSession.sparkContext.emptyRDD()
+    columns = StructType([StructField('datetime', DateType(), False),
+                           StructField('pulse', FloatType(), False),
+                           StructField('category', StringType(), False),
+                           StructField('ts_number', StringType(), False)])
 
-path = "file:///mnt/c/Users/Luca/PycharmProjects/distributed-systems/load_simulation_data/ts_data_block_1.csv"
-path_pd = "/mnt/c/Users/Luca/PycharmProjects/distributed-systems/load_simulation_data/ts_data_block_1.csv"
-# path_con = "file:///tmp/ts_data_1.csv"
-#df_pd = pd.read_csv(path_pd)
+    df = sparkSession.createDataFrame(data=emp_RDD, schema=columns)
 
-path_win = "C:\\Users\\Luca\\PycharmProjects\\distributed-systems\\load_simulation_data\\ts_data_block_1.csv"
+    for i in range(1, number_of_files + 1):
 
-print("Read csv via pandas")
+        path_data = path + fr"/ts_data_{i}.csv"  # Change Datafile name if necessary
 
-#print(df_pd.head())
+        df_temp = sparkSession.read.format("csv") \
+            .option('header', True) \
+            .option('multiLine', True) \
+            .option('inferSchema', True) \
+            .load(path_data)
 
-#sparkDF = spark.createDataFrame(df_pd)
-#print("Converted pandas DataFrame to spark DataFrame")
-#sparkDF.show()
+        df = df.union(df_temp)
 
-path_con = "file:///home/jovyan/work/ts_data_block_1.csv"
+    # option('inferSchema', True): detects the correct format else every column is declined as string
+    return df
 
-df = spark.read.format("csv") \
-    .option('header', True) \
-    .option('multiLine', True) \
-    .load("file:////tmp/ts_data_1.csv")
-
-print("Read csv directly via spark")
-
-df.show()
-
-print("Read data")
