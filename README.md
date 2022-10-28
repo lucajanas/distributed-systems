@@ -19,7 +19,11 @@ On Windows:
 4. docker network create --subnet=172.18.0.0/16 spark-network (only once)
 5. docker run -v $PWD/load_simulation_data://data:rw --net spark-network --ip 172.18.0.22 --rm --name spark -d -p 8080:8080 -p 7077:7077 -p 8081:8081 -p 8888:8888 spark
 
-Go to localhost:8888 in your browser to access JupyterLab and work with pyspark. See load_simulation_data/load_example.ipynb for an example on how to connect to the spark instance.
+Go to localhost:8888 in your browser to access JupyterLab and work with pyspark. See 
+
+    load_simulation_data/load_example.ipynb 
+
+for an example on how to connect to the spark instance.
 
 To stop the container, run
 
