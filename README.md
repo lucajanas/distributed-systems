@@ -1,5 +1,6 @@
 Requirements:
 - docker: https://docs.docker.com/desktop/install/windows-install/
+- docker-compose: https://docs.docker.com/compose/install/
 
 
 Steps:
