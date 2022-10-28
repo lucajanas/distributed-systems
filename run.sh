@@ -1,3 +1,5 @@
+#!/bin/bash
+
 NETWORK_NAME=spark-network
 SUBNET=172.18.0.0/16
 IP=172.18.0.22
