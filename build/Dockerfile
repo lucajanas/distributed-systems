@@ -24,6 +24,9 @@ RUN pip install jupyterlab
 
 COPY start_services.sh /opt
 
+RUN mkdir /data
+WORKDIR /data
+
 EXPOSE 8080
 EXPOSE 7077
 EXPOSE 8081
