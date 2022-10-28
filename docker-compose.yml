@@ -1,49 +1,30 @@
 version: '3'
 services:
-  jupyter-base-notebook:
-    image: docker.io/jupyter/pyspark-notebook:python-3.8.8
-    ports:
-      - 8888:8888
-    volumes:
-      - ./load_simulation_data:/home/jovyan/work:rw
-    networks:
-      - spark-network
-    user: root
-    environment:
-      - GRANT_SUDO=yes
-      - JUPYTER_TOKEN=tad
-      - SPARK_MASTER=spark://spark:7077
   spark:
-    image: docker.io/bitnami/spark:3
+    image: lucajanas/spark
     environment:
-      - SPARK_MODE=master
-      - SPARK_RPC_AUTHENTICATION_ENABLED=no
-      - SPARK_RPC_ENCRYPTION_ENABLED=no
-      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
-      - SPARK_SSL_ENABLED=no
+      - MODE=MASTER
     ports:
       - '8080:8080'
       - '7077:7077'
+      - '8888:8888'
     networks:
-      - spark-network
+      spark-network:
+        ipv4_address: 172.18.0.22
     volumes:
-      - ./load_simulation_data:/home/jovyan/work:rw
+      - ./load_simulation_data:/data:rw
   spark-worker:
-    image: docker.io/bitnami/spark:3
+    image: lucajanas/spark
     environment:
-      - SPARK_MODE=worker
-      - SPARK_MASTER_URL=spark://spark:7077
-      - SPARK_RPC_AUTHENTICATION_ENABLED=no
-      - SPARK_RPC_ENCRYPTION_ENABLED=no
-      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
-      - SPARK_SSL_ENABLED=no
-    ports:
-      - '8081:8081'
+      - MODE=WORKER
     networks:
       - spark-network
     volumes:
-      - ./load_simulation_data:/home/jovyan/work:rw
+      - ./load_simulation_data:/data:rw
 
 networks:
   spark-network:
     driver: bridge
+    ipam:
+      config:
+        - subnet: 172.18.0.0/16

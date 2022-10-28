@@ -4,20 +4,21 @@ Requirements:
 
 Steps:
 
-On Linux and Mac:
+If you want to download the already built image:  
 
-1. if you want to download the already built image
-   1. docker pull lucajanas/spark
-3. if you want to build the image yourself
-   1. cd distributed-systems/build
-   2. docker built . -t lucajanas/spark (this may take a while)
-4. cd distributed-systems
-5. run the container
-   1. on Linux and Mac
-      1. source run.sh
-   2. on Windows
-      1. only once: docker network create --subnet=172.18.0.0/16 spark-network
-      2. docker run -v $PWD/load_simulation_data://data:rw --net spark-network --ip 172.18.0.22 --rm --name spark -d -p 8080:8080 -p 7077:7077 -p 8081:8081 -p 8888:8888 lucajanas/spark
+      docker pull lucajanas/spark
+
+If you want to build the image yourself (which may take a while)
+
+      cd distributed-systems/build
+      docker built . -t lucajanas/spark
+
+To run the containers:
+
+      cd distributed-systems
+      docker-compose up -d --scale spark-worker=<number-of-workers>, e. g. 
+      
+      docker-compose up -d --scale spark-worker=2
 
 Go to localhost:8888 in your browser to access JupyterLab and work with pyspark. See 
 
@@ -25,9 +26,9 @@ Go to localhost:8888 in your browser to access JupyterLab and work with pyspark.
 
 for an example on how to connect to the spark instance.
 
-To stop the container, run
+To stop the containers, run
 
-    docker stop spark
+    docker-compose down
 
 # Guiding questions
 
