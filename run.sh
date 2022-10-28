@@ -8,5 +8,5 @@ if [ -z $(docker network ls --filter name=^${NETWORK_NAME}$ --format="{{ .Name }
     echo "Created network $NETWORK_NAME" 
 fi
 
-docker run -v $PWD/load_simulation_data://data:rw --net spark-network --ip ${IP} --rm --name spark -d -p 8080:8080 -p 7077:7077 -p 8081:8081 -p 8888:8888 spark
+docker run -v $PWD/load_simulation_data://data:rw --net spark-network --ip ${IP} --rm --name spark -d -p 8080:8080 -p 7077:7077 -p 8081:8081 -p 8888:8888 lucajanas/spark
 echo "Started container"
