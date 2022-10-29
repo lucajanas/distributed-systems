@@ -56,6 +56,28 @@ For our big data use case, we have a total of 13,500,000 records consisting of 1
 
 The formal definition of our problem is how can we build an accurate classifier based on derived features from the time series to predict the categories of different fitness levels.
 
+To solve this problem, we first need to preprocess the data appropriately for our classification problem and do feature engineering.
+Thus, we need to define aggregate measures for each of the time series that we can use as dependent variables for fitting the model to estimate the target variable as well as possible.
+To do this, we aggregate all the resting pulse observations for each subject , so that we use
+- the arithmetic mean 'mean,
+- the standard deviation 'std'
+- the minimum 'min
+- the lower quartile (25% quantile) 'low_quart'
+- the median 'median
+- the upper quartile (75% quantile) 'up_quart'
+- the maximum 'max'
+
+as features in our model.
+
+For the use of logistic regression the expressions of the target variable must be encoded to 0, 1 and 2 since we have multinomial output.
+Analogue to a binary logistic regression where we must encode the variable to 0 and 1. The use of multinomial logistic regression is explained in more detail in question 3.
+As the next step, we need to vectorize the feature columns and store them into a column, which we call 'features' using the VectorAssembler function to transform them.
+
+For training our model and evaluating the model goodness on the test data, it is necessary to randomly divide our dataset into training and test data. In this case, we use 70% of the data for training our model and the remaining 30% we use for our test validation. For a reproducible result, we have fixed a seed value.
+
+We can now use the pyspark.ml.classification module to apply multinomial logistic regression on our training dataset. On this trained model we can apply our test data set and compare the predicted values with the true output values from the test data.
+Since we have systematically simulated our data, it is not surprising that we have produced a model with perfect predictive power. This result is reflected in the evaluation measures explained in Question 4. 
+
 3. How does your analytical approach work and what changed compared to a non distributed version of the algorithm? Describe the algorithm that you chose to derive a solution with a focus on the tradeoffs that have been made in the distributed environment.
 
 4. How can your solution be evaluated? Discuss how the quality of your analytical solution can be evaluated and present some evaluation statistics as results. The actual quality of your forecasts or classification is not of interest, but the process on how to derive evaluation statistics and how one would benchmark multiple models.
