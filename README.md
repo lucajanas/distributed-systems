@@ -12,7 +12,7 @@ If you want to download the already built image:
 If you want to build the image yourself (which may take a while)
 
       cd distributed-systems/build
-      docker built . -t lucajanas/spark
+      docker build . -t lucajanas/spark
 
 To run the containers:
 
