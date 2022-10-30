@@ -21,11 +21,18 @@ To run the containers:
       
       docker-compose up -d --scale spark-worker=2
 
-Go to localhost:8888 in your browser to access JupyterLab and work with pyspark. See 
+Go to localhost:8888 in your browser to access JupyterLab and work with pyspark. 
 
-    load_simulation_data/load_example.ipynb 
+Before you start, please download the six files from GoogleDrive link https://drive.google.com/drive/folders/1yvU4RxPRLoy-KmEMYfy-Ibn0SjIPHD5_?usp=share_link
+and upload them to the JupyterLab environment.
 
-for an example on how to connect to the spark instance.
+Run the notebook 
+
+    load_simulation_data/Cross-sectional time series classification.ipynb 
+
+to start the analysis process.
+
+
 
 To stop the containers, run
 
