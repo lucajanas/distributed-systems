@@ -43,7 +43,7 @@ Source: https://spark.apache.org/docs/latest/cluster-overview.html
 
 2. What is the analytical problem that you want to solve? Present an adequate formal definition of your problem and describe the process how you solve it using the prototypical implementation in your data pipeline.
 
-We want to apply a classification problem to several labeled time series and make predictions based on them. For this purpose, we have generated a number of time series datasets. We have simulated the daily resting heart rate measurements, respectively the resting pulse, in beats per minute (bpm) of fictitious subjects from January 2021 to March 2021. To ensure that these values are comparable throughout the day, we emphasize that pulse measurements are always taken at the time after waking up from sleep overnight. For each subject, these are 90 observations with equidistant intervals with no missing values. In particular, we distinguish subjects with different fitness levels. Studies have shown that significantly lower resting pulses are measured in athletes and people who do endurance training or yoga, for example (https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6306777/).
+We want to apply a classification problem to several labeled time series and make predictions based on them. For this purpose, we have generated a number of time series datasets. We have simulated the daily resting heart rate measurements, respectively the resting pulse, in beats per minute (bpm) of fictitious subjects from January 2021 to March 2021. To ensure that these values are comparable throughout the day, we emphasize that pulse measurements are always taken at the time after waking up from sleep overnight. For each subject, these are 90 observations with equidistant intervals with no missing values. In particular, we distinguish subjects with different fitness levels. Studies have shown that significantly lower resting pulses are measured in athletes and for example people who do endurance training or yoga (https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6306777/).
 Therefore, for the label of the time series, we consider the three categories of subjects: 
 - 'pro_athletes' as professional athletes
 - 'athletes' as regular hobby athletes
@@ -52,18 +52,19 @@ Therefore, for the label of the time series, we consider the three categories of
 The observations are simulated by normally distributed random draws. Here, the means and standard deviations also depend on a normally distributed random draw.
 On average, it is simulated that the group of 'pro_athletes' has a resting pulse of 50, the group of 'athletes' has one of 65 and the 'non_athletes' has one of 80. The exact data simulation is implemented in the python file 'load_simulation_data.py'.
 
-For our big data use case, we have a total of 13,500,000 records consisting of 150,000 labeled subjects (divided into 6 csv files).
+For our big data use case, we have a total of 13,500,000 records consisting of 150,000 labeled subjects (divided into 6 csv files). Each file reaches a file size of 735 MB to 761 MB.
+You can download them here (https://drive.google.com/drive/folders/1yvU4RxPRLoy-KmEMYfy-Ibn0SjIPHD5_?usp=share_link).
 
 The formal definition of our problem is how can we build an accurate classifier based on derived features from the time series to predict the categories of different fitness levels.
 
 To solve this problem, we first need to preprocess the data appropriately for our classification problem and do feature engineering.
-Thus, we need to define aggregate measures for each of the time series that we can use as dependent variables for fitting the model to estimate the target variable as well as possible.
-To do this, we aggregate all the resting pulse observations for each subject , so that we use
-- the arithmetic mean 'mean,
+Thus, we need to define aggregate measures for each of the time series which we can use as independent variables for fitting the model to estimate the target variable as well as possible.
+To do this, we aggregate all the resting pulse observations for each subject, so that we use
+- the arithmetic mean 'mean'
 - the standard deviation 'std'
-- the minimum 'min
+- the minimum 'min'
 - the lower quartile (25% quantile) 'low_quart'
-- the median 'median
+- the median 'median'
 - the upper quartile (75% quantile) 'up_quart'
 - the maximum 'max'
 
@@ -75,10 +76,37 @@ As the next step, we need to vectorize the feature columns and store them into a
 
 For training our model and evaluating the model goodness on the test data, it is necessary to randomly divide our dataset into training and test data. In this case, we use 70% of the data for training our model and the remaining 30% we use for our test validation. For a reproducible result, we have fixed a seed value.
 
-We can now use the pyspark.ml.classification module to apply multinomial logistic regression on our training dataset. On this trained model we can apply our test data set and compare the predicted values with the true output values from the test data.
-Since we have systematically simulated our data, it is not surprising that we have produced a model with perfect predictive power. This result is reflected in the evaluation measures explained in Question 4. 
+We can now use the pyspark.ml.classification module to apply multinomial logistic regression on our training dataset. 
+On this trained model we can apply our test data set and compare the predicted values with the true output values from the test data.
+Since we have systematically simulated our data, it is not surprising that we have produced a model with a very good predictive power. 
+This result is reflected in the evaluation measures explained in question 4. 
 
 3. How does your analytical approach work and what changed compared to a non distributed version of the algorithm? Describe the algorithm that you chose to derive a solution with a focus on the tradeoffs that have been made in the distributed environment.
+
+The algorithm we chose to derive a solution is multinomial logistic regression. 
+Typically, logistic regression is used for binary outcome prediction. 
+In our case, we have three categorical outcomes, so that's why we resort to multinomial logistic regression. 
+For simplicity, we will use binary logistic regression first for the explanation, since the multinomial version is based on it. 
+Logistic regression is a parametric classification model from supervised learning. 
+It is derived from the idea of linear regression. 
+Since we do not want to predict an interval scaled target variable as in linear regression, we transform the function in such a way that we congest it into a sigmoid function to obtain probabilities for the occurrence of an outcome 0 or 1. 
+For a threshold, we usually consider the cutoff at 0.5 for the classification decisions for 0 or 1. 
+What this fit should look like depends on the independent variables, the features. 
+The parameters are calculated depending on the available training data. 
+The fitted model can be used to read in new input data and estimate the outcome of the target variable. 
+For the application of multinominal logistic regression, a separate binary regression is calculated in the background for each outcome category, where the selected outcome is assigned as 1 and all others as 0. 
+For the prediction of the outcome, the outcome with the highest probability is selected for each calculated binary logistic regression.
+
+There are a few tradeoffs in using the distributed environment using spark.
+In the non-distributed environment the pandas library is one of the most used and most powerful data analysis and data manipulation tool.
+In the distributed environment using spark we must resort to using pyspark dataframes in python. 
+Unfortunately, the pyspark dataframes has a very limited support of pandas dataframe functions. 
+For instance when calculating the statistics for each times series, using column id 'ts_number', we could not just apply the implemented describe() function as it is possible in the pandas dataframe setting.
+That is why we have defined a function groupby_describe() in our project for calculating the statistics using the module pyspark.sql.functions.
+Another aspect in the application of spark is, that spark seems to be slow in a few situations, especially by counting the rows in a spark dataframe.
+That's why in our notebook the counting calculations are commented out. If you are interested in the output, just comment them back in.
+
+Also the Spark machine learning library has limited support of implemented statistic functions, that's why it is often necessary to implement advanced methods manually.
 
 4. How can your solution be evaluated? Discuss how the quality of your analytical solution can be evaluated and present some evaluation statistics as results. The actual quality of your forecasts or classification is not of interest, but the process on how to derive evaluation statistics and how one would benchmark multiple models.
 
@@ -92,7 +120,7 @@ But the accuracy measure is not a good measure for unbalanced classification. Th
 
 - Recall: Recall is a metric that shows how many of the positive cases the classifier has correctly predicted, over all the positive cases in the data.
 
-- F1-Score: A good classifier is a good trade of of both precision and recall to be close to the value 1. Therefore, the F1-score metric is needed to combine both precision and recall.
+- F1-Score: A good classifier is a good tradeoff of both precision and recall to be close to the value 1. Therefore, the F1-score metric is needed to combine both precision and recall.
 
 5. What are the limitations of your solution? Kleppmann (2017) mentions reliability, scalability, and maintainability as key success factors for distributed data intensive systems. How are those goals achieved in your system? What are the most relevant topics (e.g. sections or subsections from Kleppmanns book) when scaling your prototypical system?
 
