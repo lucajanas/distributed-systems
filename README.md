@@ -50,7 +50,7 @@ Source: https://spark.apache.org/docs/latest/cluster-overview.html
 
 2. What is the analytical problem that you want to solve? Present an adequate formal definition of your problem and describe the process how you solve it using the prototypical implementation in your data pipeline.
 
-We want to apply a classification problem to several labeled time series and make predictions based on them. For this purpose, we have generated a number of time series datasets. We have simulated the daily resting heart rate measurements, respectively the resting pulse, in beats per minute (bpm) of fictitious subjects from January 2021 to March 2021. To ensure that these values are comparable throughout the day, we emphasize that pulse measurements are always taken at the time after waking up from sleep overnight. For each subject, these are 90 observations with equidistant intervals with no missing values. In particular, we distinguish subjects with different fitness levels. Studies have shown that significantly lower resting pulses are measured in athletes and for example people who do endurance training or yoga (https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6306777/).
+We want to apply a classification problem to several labeled time series and make predictions based on them. For this purpose, we have generated a number of time series datasets. We have simulated the daily resting heart rate measurements, respectively the resting pulse, in beats per minute (bpm) of fictitious subjects from January 2021 to March 2021. To ensure that these values are comparable throughout the day, we emphasize that pulse measurements are always taken at the time after waking up from sleep overnight. For each subject, these are 90 observations with equidistant intervals with no missing values. In particular, we distinguish subjects with different fitness levels. Studies have shown that significantly lower resting pulses are measured in athletes and for example people who do endurance training or yoga [Reimers(2018)].
 Therefore, for the label of the time series, we consider the three categories of subjects: 
 - 'pro_athletes' as professional athletes
 - 'athletes' as regular hobby athletes
@@ -106,14 +106,14 @@ For the prediction of the outcome, the outcome with the highest probability is s
 
 In a non distributed version this analytical approach would run slower. Due to its distributed architecture in a cluster using Spark, we can process extremely large amounts of data in a performant manner and thus execute jobs in parallel.
 It is easily scalable and works in memory. However, if you are processing small amounts of data, the computation may be slower because the loading of data is done by multiple tasks, where each task is loaded into multiple partitions.
-The distributed system has the advantage that the data is replicated on several machines and thus protected against data loss in the event of a machine failure.
+The distributed system has the advantage that the data is replicated on several machines and thus protected against data loss in the event of a machine failure [Zaharia(2012)].
 
 There are also a fewer tradeoffs in using the distributed environment using spark.
 In the non-distributed environment the pandas library is one of the most used and most powerful data analysis and data manipulation tool.
 In the distributed environment using spark we must resort to using pyspark dataframes in python. 
 Unfortunately, the pyspark dataframes has a limited support of pandas dataframe functions. 
 For instance when calculating the statistics for each time series using column id 'ts_number', we could not just apply the implemented describe() function as it is possible in the pandas dataframe setting.
-That is why we have defined a function groupby_describe() in our project for calculating the statistics using the module pyspark.sql.functions.
+That is why we have defined a function groupby_describe() in our project for calculating the statistics using the module pyspark.sql.functions. (https://spark.apache.org/docs/2.3.0/sql-programming-guide.html#datasets-and-dataframes)
 Another aspect in the application of spark is, that spark seems to be slow in a few situations, especially by counting the rows in a spark dataframe.
 That's why in our notebook the counting calculations are commented out. If you are interested in the output, just comment them back in.
 
@@ -142,3 +142,12 @@ The disadvantages and weaknesses of our system in regards to reliability and sca
 Regarding maintailability, updating the spark version is fairly easy. You just have to update the version of the spark container in the docker-compose.yml. But changing something in this setup requires a restart and therefore a downtime of the application. Here, too, kubernetes could possibly help by introducing rolling updates of the service. With rolling updates, kubernetes pods with the new spark version could be rolled out while the pods with the old version keep serving clients until the new spark version takes over.
 
 Nevertheless, using the containerized version of spark removes a part of the complexity even in our docker-compose setup as the container images bring everything spark needs and can be tested as a whole. To improve the maintainability of our system, monitoring - e. g. using prometheus and grafana - would be very helpful.
+
+
+# References
+  - Reimers, A.; Knapp, G.; Reimers, C. (2018). Effects of Exercise on the Resting Heart Rate: A Systematic Review and Meta-Analysis of Interventional Studies. J. Clin. Med (https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6306777/)
+  - Zaharia, Matei et al (2012). Resilient Distributed Datasets: A Fault-Tolerant Abstraction for In-Memory Cluster Computing. University of California, Berkeley (https://www.usenix.org/system/files/conference/nsdi12/nsdi12-final138.pdf)
+  - Spark: spark.apache.org (https://spark.apache.org/docs/2.3.0/sql-programming-guide.html#datasets-and-dataframes); 
+  - Spark: spark.apache.org (https://spark.apache.org/docs/latest/cluster-overview.html)
+  - Zaharia, Matei et al (2010). Spark: Cluster Computing with Working Sets. University of California, Berkeley (https://www.usenix.org/legacy/event/hotcloud10/tech/full_papers/Zaharia.pdf)
+  - Rad, B.; Bhatti, H.J.; Ahmadi, M (2017). An Introduction to Docker and Analysis of its Performance. Asia Pacific University of Technology and Innovation Technology Park Malaysia, Kuala Lumpur, Malaysia (http://paper.ijcsns.org/07_book/201703/20170327.pdf)
