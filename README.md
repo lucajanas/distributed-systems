@@ -104,16 +104,18 @@ The fitted model can be used to read in new input data and estimate the outcome 
 For the application of multinominal logistic regression, a separate binary regression is calculated in the background for each outcome category, where the selected outcome is assigned as 1 and all others as 0. 
 For the prediction of the outcome, the outcome with the highest probability is selected for each calculated binary logistic regression.
 
-There are a few tradeoffs in using the distributed environment using spark.
+In a non distributed version this analytical approach would run slower. Due to its distributed architecture in a cluster using Spark, we can process extremely large amounts of data in a performant manner and thus execute jobs in parallel.
+It is easily scalable and works in memory. However, if you are processing small amounts of data, the computation may be slower because the loading of data is done by multiple tasks, where each task is loaded into multiple partitions.
+The distributed system has the advantage that the data is replicated on several machines and thus protected against data loss in the event of a machine failure.
+
+There are also a fewer tradeoffs in using the distributed environment using spark.
 In the non-distributed environment the pandas library is one of the most used and most powerful data analysis and data manipulation tool.
 In the distributed environment using spark we must resort to using pyspark dataframes in python. 
-Unfortunately, the pyspark dataframes has a very limited support of pandas dataframe functions. 
-For instance when calculating the statistics for each times series, using column id 'ts_number', we could not just apply the implemented describe() function as it is possible in the pandas dataframe setting.
+Unfortunately, the pyspark dataframes has a limited support of pandas dataframe functions. 
+For instance when calculating the statistics for each time series using column id 'ts_number', we could not just apply the implemented describe() function as it is possible in the pandas dataframe setting.
 That is why we have defined a function groupby_describe() in our project for calculating the statistics using the module pyspark.sql.functions.
 Another aspect in the application of spark is, that spark seems to be slow in a few situations, especially by counting the rows in a spark dataframe.
 That's why in our notebook the counting calculations are commented out. If you are interested in the output, just comment them back in.
-
-Also the Spark machine learning library has limited support of implemented statistic functions, that's why it is often necessary to implement advanced methods manually.
 
 4. How can your solution be evaluated? Discuss how the quality of your analytical solution can be evaluated and present some evaluation statistics as results. The actual quality of your forecasts or classification is not of interest, but the process on how to derive evaluation statistics and how one would benchmark multiple models.
 
