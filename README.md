@@ -113,7 +113,7 @@ In the non-distributed environment the pandas library is one of the most used an
 In the distributed environment using spark we must resort to using pyspark dataframes in python. 
 Unfortunately, the pyspark dataframes has a limited support of pandas dataframe functions. 
 For instance when calculating the statistics for each time series using column id 'ts_number', we could not just apply the implemented describe() function as it is possible in the pandas dataframe setting.
-That is why we have defined a function groupby_describe() in our project for calculating the statistics using the module pyspark.sql.functions. (https://spark.apache.org/docs/2.3.0/sql-programming-guide.html#datasets-and-dataframes)
+That is why we have defined a function groupby_describe() in our project for calculating the statistics using the module pyspark.sql.functions (https://spark.apache.org/docs/2.3.0/sql-programming-guide.html#datasets-and-dataframes).
 Another aspect in the application of spark is, that spark seems to be slow in a few situations, especially by counting the rows in a spark dataframe.
 That's why in our notebook the counting calculations are commented out. If you are interested in the output, just comment them back in.
 
@@ -123,7 +123,7 @@ Since we have chosen a multinomial logistic regression model with nominally scal
 
 - Accuracy: The accuracy measure is defined as the percentage of correctly classified data of all prediction outcomes in the test data.
 
-But the accuracy measure is not a good measure for unbalanced classification. Therefore, it is often necessary to consider other metrics.
+But the accuracy measure is not a good measure for unbalanced classification (not in our case). Therefore, it is often necessary to consider other metrics.
 
 - Precision: Precision is a metric that shows how many of the positive predictions made are correct.
 
