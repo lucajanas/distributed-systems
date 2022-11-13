@@ -119,17 +119,38 @@ That's why in our notebook the counting calculations are commented out. If you a
 
 4. How can your solution be evaluated? Discuss how the quality of your analytical solution can be evaluated and present some evaluation statistics as results. The actual quality of your forecasts or classification is not of interest, but the process on how to derive evaluation statistics and how one would benchmark multiple models.
 
-Since we have chosen a multinomial logistic regression model with nominally scaled outcome variables as our analytic approach, we can consider a confusion matrix to measure correctly classified and misclassified predictions. From this confusion matrix, we can apply various statistical measures to evaluate our model based on the training data on the test data.
+Since we have chosen a multinomial logistic regression model with nominally scaled outcome variables as our analytic approach, we can consider a confusion matrix to measure correctly classified and misclassified predictions.
+
+The confusion matrix obtained from our model (based on a set seed=12345) is as follows: 
+
+ | ---------------------- | athlete - True | pro_athlete - True | non_athlete - True |
+ |------------------------|----------------|--------------------|--------------------|
+ | athlete - Pred         | 135481         | 10054              | 3546               |
+ | pro_athlete - Pred     | 10317          | 140633             | 0                  |
+ | non_athlete - Pred     | 5488           | 0                  | 145935             |
+
+From this confusion matrix, we can apply various statistical measures to evaluate our model based on the training data to our test data set.
 
 - Accuracy: The accuracy measure is defined as the percentage of correctly classified data of all prediction outcomes in the test data.
+
+Accuracy: 0.9348660107120548
 
 But the accuracy measure is not a good measure for unbalanced classification (not in our case). Therefore, it is often necessary to consider other metrics.
 
 - Precision: Precision is a metric that shows how many of the positive predictions made are correct.
 
+Precision: 0.9087744246416377
+
 - Recall: Recall is a metric that shows how many of the positive cases the classifier has correctly predicted, over all the positive cases in the data.
 
+Recall: 0.8955289980566609
+
 - F1-Score: A good classifier is a good tradeoff of both precision and recall to be close to the value 1. Therefore, the F1-score metric is needed to combine both precision and recall.
+
+F1-Score: 0.9347111814071491
+
+As we can see, all of our measures fall within a range of 0.89 to 0.93, and especially close to the value of 1. 
+Therefore, we can say that we have a very good prediction quality with our model in all measures.
 
 5. What are the limitations of your solution? Kleppmann (2017) mentions reliability, scalability, and maintainability as key success factors for distributed data intensive systems. How are those goals achieved in your system? What are the most relevant topics (e.g. sections or subsections from Kleppmanns book) when scaling your prototypical system?
 
